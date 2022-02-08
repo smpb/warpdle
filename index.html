@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+  <!-- FB Meta Tags -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Warpdle - Warp that Wordle!">
+  <meta property="og:description" content="Change the look of your Wordle solution.">
+  <meta property="og:image" content="https://www.dailywordle.com/images/wordle_og_1200x630.png">
+
+  <!-- Twitter Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+
+  <meta name="theme-color" content="#6aaa64">
+  <link href="https://www.powerlanguage.co.uk/images/wordle_logo_32x32.png" rel="icon shortcut" sizes="3232">
+  <link href="https://www.powerlanguage.co.uk/images/wordle_logo_192x192.png" rel="apple-touch-icon">
+  <title>Warpdle - Warp that Wordle!</title>
+  <style>
+    /* Global Styles & Colors */
+    :root {
+      --green: #6aaa64;
+      --yellow: #c9b458;
+      --gray: #86888a;
+      /* Colorblind colors */
+      --orange: #f5793a;
+      --blue: #85c0f9;
+      font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 16px;
+      --header-height: 50px;
+      --keyboard-height: 200px;
+      --game-max-width: 500px;
+
+      /* Light theme colors */
+      --color-tone-1: #1a1a1b;
+      --color-tone-2: #787c7e;
+      --color-tone-3: #878a8c;
+      --color-tone-4: #d3d6da;
+      --color-tone-5: #edeff1;
+      --color-tone-6: #f6f7f8;
+      --color-tone-7: #ffffff;
+      --opacity-50: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Dark Theme Colors */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --green: #538d4e;
+        --yellow: #b59f3b;
+        --gray: #939598;
+        --color-tone-1: #d7dadc;
+        --color-tone-2: #818384;
+        --color-tone-3: #565758;
+        --color-tone-4: #3a3a3c;
+        --color-tone-5: #272729;
+        --color-tone-6: #1a1a1b;
+        --color-tone-7: #121213;
+        --opacity-50: rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    html {
+      height: 100%;
+    }
+
+    body {
+      height: 100%;
+      background-color: var(--color-tone-7);
+      margin: 0;
+      padding: 0;
+      /* Prevent scrollbar appearing on page transition */
+      overflow-y: hidden;
+    }
+
+    #container {
+      width: 100%;
+      max-width: var(--game-max-width);
+      margin: 0 auto;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #areas-container {
+      display: flex;
+      justify-content: start;
+      align-items: center;
+      flex-grow: 1;
+      overflow: hidden;
+      flex-direction: column;
+    }
+
+    header {
+      min-height: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: var(--header-height);
+      color: var(--color-tone-1);
+      border-bottom: 1px solid var(--color-tone-4);
+    }
+
+    header .title {
+      font-weight: 700;
+      font-size: 36px;
+      letter-spacing: 0.2rem;
+      text-transform: uppercase;
+      text-align: center;
+      position: absolute;
+      left: 0;
+      right: 0;
+      pointer-events: none;
+    }
+
+    .warp {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-left: 12px;
+      width: 50%;
+      margin-bottom: 25px;
+    }
+
+    button#warp-it {
+      background-color: var(--green);
+      color: var(--color-tone-1);
+      font-family: inherit;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      border: none;
+      user-select: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-transform: uppercase;
+      -webkit-tap-highlight-color: rgba(0,0,0,0.3);
+      width: 80%;
+      font-size: 20px;
+      height: 52px;
+      -webkit-filter: brightness(100%);
+    }
+
+    textarea {
+      color: var(--color-tone-1);
+      background: transparent;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.75em;
+      resize: none;
+      margin: 10px;
+      font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+      width: 90%;
+      height: 75vw;
+    }
+
+    textarea:focus-visible {
+      outline: var(--color-tone-1) var(--green) 1px;
+    }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const warpIt    = document.getElementById("warp-it");
+      const warpInput = document.getElementById("warp-input");
+      const clipboard = document.getElementById("clipboard");
+
+      const regexMa = /🟧|🟩/ig;
+      const regexIa = /🟦|🟨/ig;
+      const regexOa = /⬛|⬜/ig;
+
+      const replacements = [
+        ['😄', '🤨', '🙁'],
+        ['👍', '🤞', '👎'],
+        ['🤓', '🧐', '🥺'],
+        ['😸', '🙀', '😿'],
+        ['🙋‍♂️', '🙅‍♂️', '🤦‍♂️'],
+        ['☀️', '⛅️', '🌧'],
+        ['🥇', '🥈', '🥉'],
+        ['📗', '📙', '📕'],
+        ['🔓', '🔐', '🔒'],
+        ['💚', '💛', '🖤'],
+        ['🟢', '🟡', '⚫️'],
+        ['🔊', '🔈', '🔇'],
+        ['✅', '⚠️', '❌']
+      ];
+
+      let usedIndexes = [];
+
+      warpIt.addEventListener('click', function () {
+        let content = warpInput.value;
+        let index = -1;
+
+        if (content == '') return;
+
+        do {
+          index = Math.floor(Math.random() * replacements.length);
+        } while (usedIndexes.includes(index));
+
+        usedIndexes.push(index);
+        if (usedIndexes.length > Math.ceil(replacements.length / 2)) {
+          usedIndexes.splice(0, 1);
+        }
+
+        content = content.replace(/Wordle/ig, 'Warpdle');
+
+        content = content.replace(regexMa, replacements[index][0]);
+        content = content.replace(regexIa, replacements[index][1]);
+        content = content.replace(regexOa, replacements[index][2]);
+
+        clipboard.value = content;
+        clipboard.select();
+        document.execCommand('copy');
+
+        warpIt.innerText = 'Copied!';
+        setTimeout(() => { warpIt.innerText = 'Warp it' }, 500);
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <div id="container">
+    <header>
+      <div class="title">WARPDLE</div>
+    </header>
+    <div id="areas-container">
+      <textarea id="warp-input" rows=10></textarea>
+      <div class="warp">
+        <button id="warp-it">Warp it</button>
+      </div>
+      <textarea disabled id="clipboard" rows=10></textarea>
+    </div>
+  </div>
+</body>
+
+</html>
