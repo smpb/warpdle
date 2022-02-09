@@ -196,6 +196,23 @@
         ['✅', '⚠️', '❌']
       ];
 
+      const copyContent = function (content) {
+        if (content == '') return;
+
+        clipboard.value = content;
+
+        navigator.clipboard.writeText(content).then(
+          function () { },
+          function () {
+            clipboard.select();
+            document.execCommand('copy');
+          }
+        );
+
+        warpIt.innerText = 'Copied!';
+        setTimeout(function () { warpIt.innerText = 'Warp it' }, 500);
+      };
+
       let usedIndexes = [];
 
       warpIt.addEventListener('click', function () {
@@ -219,12 +236,7 @@
         content = content.replace(regexIa, replacements[index][1]);
         content = content.replace(regexOa, replacements[index][2]);
 
-        clipboard.value = content;
-        clipboard.select();
-        document.execCommand('copy');
-
-        warpIt.innerText = 'Copied!';
-        setTimeout(() => { warpIt.innerText = 'Warp it' }, 500);
+        copyContent(content);
       });
     });
   </script>
@@ -240,7 +252,7 @@
       <div class="warp">
         <button id="warp-it">Warp it</button>
       </div>
-      <textarea disabled id="clipboard" placeholder="Warped output will be shown here, and copied to the clipboard automatically."></textarea>
+      <textarea readonly id="clipboard" placeholder="Warped output will be shown here, and copied to the clipboard automatically."></textarea>
     </div>
   </div>
 </body>
