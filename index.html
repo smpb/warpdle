@@ -156,6 +156,11 @@
       height: 75vw;
     }
 
+    textarea::placeholder {
+      font-size: .75em;
+      padding: .75em;
+    }
+
     textarea:focus-visible {
       outline: var(--color-tone-1) var(--green) 1px;
     }
@@ -231,11 +236,11 @@
       <div class="title">WARPDLE</div>
     </header>
     <div id="areas-container">
-      <textarea id="warp-input" rows=10></textarea>
+      <textarea id="warp-input" placeholder="Paste your Wordle share here."></textarea>
       <div class="warp">
         <button id="warp-it">Warp it</button>
       </div>
-      <textarea disabled id="clipboard" rows=10></textarea>
+      <textarea disabled id="clipboard" placeholder="Warped output will be shown here, and copied to the clipboard automatically."></textarea>
     </div>
   </div>
 </body>
